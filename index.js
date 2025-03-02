@@ -120,6 +120,7 @@ app.get('/totals', async (req, res) => {
 });
 
 // Start server
+const port = process.env.PORT || 3000; // Use Railway's assigned port
 app.listen(port, () => {
-  console.log(`Server running at http://localhost:${port}`);
+  console.log(`Server running on port ${port}`);
 });
