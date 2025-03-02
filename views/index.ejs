@@ -1,0 +1,49 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Enter Marks & Sign</title>
+    <style>
+        table { width: 60%; margin: auto; border-collapse: collapse; }
+        th, td { padding: 10px; border: 1px solid black; text-align: center; }
+        button { margin-top: 10px; }
+    </style>
+</head>
+<body>
+    <h2 style="text-align:center;">Enter Marks & Sign for Each Row</h2>
+
+    <form action="/update-all" method="POST">
+        <table>
+            <tr>
+                <th>ID</th>
+                <th>Label</th>
+                <th>Marks</th>
+                <th>Sign</th>
+            </tr>
+            <% questions.forEach(question => { %>
+            <tr>
+                <td><%= question.id %></td>
+                <td><%= question.label %></td>
+                <td>
+                    <input type="hidden" name="ids[]" value="<%= question.id %>">
+                    <input type="number" name="marks[]" value="<%= question.marks || '' %>">
+                </td>
+                <td>
+                    <%= question.sign %>
+                </td>
+            </tr>
+            <% }); %>
+        </table>
+
+        <div style="text-align:center;">
+            <button type="submit">Save All</button>
+        </div>
+    </form>
+
+    <br>
+    <div style="text-align:center;">
+        <a href="/totals"><button>View Total Marks</button></a>
+    </div>
+</body>
+</html>
