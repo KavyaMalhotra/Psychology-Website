@@ -1,14 +1,26 @@
 <!DOCTYPE html>
 <html lang="en">
+
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Total Marks</title>
     <style>
-        table { width: 40%; margin: auto; border-collapse: collapse; }
-        th, td { padding: 10px; border: 1px solid black; text-align: center; }
+        table {
+            width: 40%;
+            margin: auto;
+            border-collapse: collapse;
+        }
+
+        th,
+        td {
+            padding: 10px;
+            border: 1px solid black;
+            text-align: center;
+        }
     </style>
 </head>
+
 <body>
     <h2 style="text-align:center;">Total Marks by Label</h2>
     <table>
@@ -16,17 +28,45 @@
             <th>Label</th>
             <th>Total Marks (Category)</th>
         </tr>
-        <% totals.forEach(total => { %>
-        <tr>
-            <td><%= total.label %></td>
-            <td><%= total.total_marks %> (<%= total.category %>)</td>
-        </tr>
-        <% }); %>
+        <% totals.forEach(total=> { %>
+            <tr>
+                <td>
+                    <%= total.label %>
+                </td>
+                <td>
+                    <%= total.total_marks %> (<%= total.category %>)
+                </td>
+            </tr>
+            <% }); %>
     </table>
 
+
+    <form action="/add-to-sheet" method="POST">
+        <input type="hidden" name="totals" value='<%= JSON.stringify(totals).replace(/'/g, "&apos;") %>'>
+        
+        <label for="coping">Coping:</label>
+        <input type="text" id="coping" name="coping">
+        
+        <br><br>
+        <button type="submit">📄 Add to Spreadsheet</button>
+    </form>
+    
     <br>
     <div style="text-align:center;">
         <a href="/"><button>Back to Entry</button></a>
     </div>
+
+    <script>
+        document.querySelector('form').addEventListener('submit', (event) => {
+            const copingInput = document.getElementById('coping').value;
+            const hiddenInput = document.createElement('input');
+            hiddenInput.type = 'hidden';
+            hiddenInput.name = 'coping';
+            hiddenInput.value = copingInput;
+            event.target.appendChild(hiddenInput);
+        });
+    </script>
+    
 </body>
+
 </html>

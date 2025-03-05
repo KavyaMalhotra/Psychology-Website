@@ -2,6 +2,7 @@ import 'dotenv/config'; // Loads environment variables from .env
 import express from 'express';
 import pkg from 'pg';
 import bodyParser from 'body-parser';
+import { addToGoogleSheets } from './googleSheets.js';
 
 const { Pool } = pkg;
 
@@ -118,6 +119,54 @@ app.get('/totals', async (req, res) => {
     res.send("Error calculating totals");
   }
 });
+
+app.post('/add-to-sheet', async (req, res) => {
+  try {
+      console.log("Received Data:", req.body); // Debugging
+
+      // Parse totals if it's a string
+      let totals = req.body.totals;
+      if (typeof totals === "string") {
+          totals = JSON.parse(totals);
+      }
+
+      // Ensure totals is an array
+      if (!Array.isArray(totals)) {
+          console.error("Error: totals is not an array", totals);
+          return res.status(400).send(`<script>alert("Invalid data format"); window.location.href="/index";</script>`);
+      }
+
+      // Transform totals array into an object matching the sheet columns
+      const rowData = {
+          coh: totals.find(t => t.label === 'coh')?.total_marks || '',
+          exp: totals.find(t => t.label === 'exp')?.total_marks || '',
+          conf: totals.find(t => t.label === 'conf')?.total_marks || '',
+          ac: totals.find(t => t.label === 'A/C')?.total_marks || '',
+          ind: totals.find(t => t.label === 'ind')?.total_marks || '',
+          aro: totals.find(t => t.label === 'ARO')?.total_marks || '',
+          org: totals.find(t => t.label === 'org')?.total_marks || '',
+          ctrl: totals.find(t => t.label === 'ctrl')?.total_marks || '',
+          coping: Array.isArray(req.body.coping) ? req.body.coping.join(", ") : req.body.coping
+      };
+
+      console.log("Row Data to be added:", rowData); // Debugging
+
+      // Call the addToGoogleSheets function to add the data
+      await addToGoogleSheets(rowData);
+
+      // Redirect back to the index page after successful insertion
+      res.redirect('/');
+
+  } catch (error) {
+      console.error('Error adding data to sheet:', error);
+      res.status(500).send(`<script>alert("❌ Failed to add data"); window.location.href="/index";</script>`);
+  }
+});
+
+
+
+
+
 
 // Start server
 // Start server
